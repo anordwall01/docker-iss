@@ -31,8 +31,8 @@ def get_iss_location():
         # fetch values from response
         timestamp = r['timestamp']
         # convert timestamp to human readable date and time (out of epoch)
-        dt_obj = datetime.datetime.fromtimestamp(timestamp)
-        dtime = dt_obj.strftime('%Y-%m-%d-%H:%M:%S')
+        # dt_obj = datetime.datetime.fromtimestamp(timestamp)
+        # dtime = dt_obj.strftime('%Y-%m-%d-%H:%M:%S')
 
         # get longitude and latitude
         long = r['iss_position']['longitude']
@@ -44,14 +44,14 @@ def get_iss_location():
         logger.info("Latitude: " + lat)
 
         # write output to mongo db
-        write_to_mongo(dtime, long, lat)
+        write_to_mongo(timestamp, long, lat)
 
     except Exception as e:
         logger.error(e)
         exit(1)
 
 # db utility fcn
-def write_to_mongo(dtime, long, lat):
+def write_to_mongo(timestamp, long, lat):
     # write output to mongo db
     try:
         # use an ENV variable for the password
@@ -67,7 +67,7 @@ def write_to_mongo(dtime, long, lat):
         # use your UVA computing ID for the database name
         db = client['mst3k']
         collection = db['locations']
-        collection.insert_one({'timestamp': dtime, 'longitude': long, 'latitude': lat})
+        collection.insert_one({'timestamp': timestamp, 'longitude': long, 'latitude': lat})
         logger.info('Output written to MongoDB')
     except Exception as e:
         logger.error(e)
